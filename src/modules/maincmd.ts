@@ -16,7 +16,7 @@ class MainModule extends Extension {
         if (!await mod.uidindb(i.user.id)) {
             const ErrorEmbed = new EmbedBuilder()
                 .setTitle("오류")
-                .setDescription("데이터 베이스에서 유저 정보를 찾을 수 없어요.\n[웹사이트](https://dstat.life)에서 먼저 로그인을 진행해 주세요.")
+                .setDescription("데이터베이스에서 유저 정보를 찾을 수 없어요.\n[웹사이트](https://dstat.life)에서 먼저 로그인을 진행해 주세요.")
             return i.reply({ embeds: [ErrorEmbed] })
         }
         const LoadEmbed = new EmbedBuilder()
