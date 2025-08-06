@@ -21,7 +21,7 @@ class UtillModule extends Extension {
     })
     async dashboard(i: ChatInputCommandInteraction) {
         const embed = new EmbedBuilder()
-            .setDescription(`**파란색 부분을 눌러 [대시보드](https://dstat.life/dashboard)로 이동할 수 있어요!**`)
+            .setDescription(`**파란색 부분을 눌러 [대시보드](https://dstat.life/dash)로 이동할 수 있어요!**`)
             .setColor(0x3498db)
         await i.reply({ embeds: [embed] })
     }
@@ -33,7 +33,7 @@ class UtillModule extends Extension {
     })
     async pointshop(i: ChatInputCommandInteraction) {
         const embed = new EmbedBuilder()
-            .setDescription(`**파란색 부분을 눌러 [포인트 상점](https://dstat.life/shop)으로 이동할 수 있어요!**`)
+            .setDescription(`**파란색 부분을 눌러 [포인트 상점](https://dstat.life/store)으로 이동할 수 있어요!**`)
             .setColor(0x3498db)
         await i.reply({ embeds: [embed] })
     }
