@@ -12,7 +12,7 @@ export async function uidindb(this: any, uid: string): Promise<boolean> {
 
         return result.length > 0;
     } catch (error) {
-        this.logger.error(`데이터베이스 명령 수행중 오류가 발생했어요 : ${error}`)
+        console.log(`데이터베이스 명령 수행중 오류가 발생했어요 : ${error}`)
         return false
     }
 }
