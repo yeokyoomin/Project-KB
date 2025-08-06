@@ -11,8 +11,8 @@ import path from 'path'
 class DevModule extends Extension {
   @applicationCommand({
     type: ApplicationCommandType.ChatInput,
-    name: 'reload',
-    description: 'reload modules',
+    name: '리로드',
+    description: '명령어를 다시 불러와요! (개발용)',
   })
   async reload(i: ChatInputCommandInteraction) {
     await i.deferReply()

@@ -21,7 +21,19 @@ class UtillModule extends Extension {
     })
     async dashboard(i: ChatInputCommandInteraction) {
         const embed = new EmbedBuilder()
-            .setDescription(`**[이곳을 클릭하여 이동해 보세요!](https://dstat.life)**`)
+            .setDescription(`**파란색 부분을 눌러 [대시보드](https://dstat.life/dashboard)로 이동할 수 있어요!**`)
+            .setColor(0x3498db)
+        await i.reply({ embeds: [embed] })
+    }
+
+    @applicationCommand({
+        name: '포인트상점',
+        type: ApplicationCommandType.ChatInput,
+        description: '상점으로 갈 수 있는 링크를 드려요!',
+    })
+    async pointshop(i: ChatInputCommandInteraction) {
+        const embed = new EmbedBuilder()
+            .setDescription(`**파란색 부분을 눌러 [포인트 상점](https://dstat.life/shop)으로 이동할 수 있어요!**`)
             .setColor(0x3498db)
         await i.reply({ embeds: [embed] })
     }
