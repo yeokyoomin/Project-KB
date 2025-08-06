@@ -1,9 +1,6 @@
 import { Extension, applicationCommand } from '@pikokr/command.ts'
 import { EmbedBuilder, ApplicationCommandType, ChatInputCommandInteraction } from 'discord.js'
-//import { eq } from 'drizzle-orm'
 import * as mod from '../database/modules'
-//import { db } from '../database/db'
-//import { users, purchases } from '../database/schema'
 
 class MainModule extends Extension {
 
@@ -23,6 +20,7 @@ class MainModule extends Extension {
             .setTitle("잠시만 기다려 주세요!")
             .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
         await i.reply({ embeds: [LoadEmbed] })
+
         const embed = new EmbedBuilder()
             .setDescription(`**NaN Point**`)
             .setColor(0x3498db)
