@@ -1,33 +1,26 @@
-# Command.TS V5 QuickStart Template
+## 참고사항
 
-This is a template of discord bot made with [@pikokr/command.ts](https://github.com/pikokr/command.ts) v5 with slash commands.
+이 프로젝트는 pnpm을 사용해요!
 
-## Creating an App
+pnpm 설치 부분은 https://pnpm.io/ko/installation 을 참고해주세요!
 
-You’ll need to have Node 16.9.0 or later version on your local development machine (but it’s not required on the server). We recommend using the latest LTS version. You can use nvm (macOS/Linux) or nvm-windows to switch Node versions between different projects.
-To create a new app, you should use [npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b).
+노드 16.9.0 또는 최신 버전이 필요해요!
+
+`config.example.json`파일을 `config.json`으로 변경한 후 내용을 작성해주세요!
 
 ```shell
-npx degit pikokr/command.ts-v5-template my-app
-cd my-app
+git clone https://github.com/yeokyoomin/Project-KB.git bot
+cd bot
 
 corepack enable
 
 pnpm i
-pnpm dev
 ```
 
-Runs the app in development mode.
+### 개발 모드에서 봇을 실행하는 방법
 
-### Install Dependencies
+`pnpm dev`를 사용하여 개발 모드로 봇을 실행할 수 있어요!
 
-You can install dependencies with `pnpm install`(this template is configured to use only pnpm for package manager). This must be done the first time you create the app.
+### 프로덕션 모드에서 봇을 실행하는 방법
 
-### Run the bot in development mode.
-
-You can run your bot in development mode with `pnpm dev`
-
-### Build the bot and run for production
-
-If you use `pnpm build` without errors in your code, the build file will appear in `dist` folder.
-You can execute this file with `pnpm start` for your production.
+`pnpm build`를 사용하여 프로젝트를 빌드한 후 `pnpm start`를 사용하여 프로덕션 모드에서 봇을 실행할 수 있어요!

@@ -1,6 +1,7 @@
+/*디스코드 봇의 이벤트를 담당하는 파일이에요!*/
 import { Extension, listener } from '@pikokr/command.ts'
 import { Message } from 'discord.js'
-
+import { pointedit } from '../database/modules'
 class EventModule extends Extension {
   @listener({ event: 'ready' })
 
@@ -14,10 +15,12 @@ class EventModule extends Extension {
     this.logger.error(err)
   }
 
+  //메시지 감지
   @listener({ event: 'messageCreate' })
   async onMessage(message: Message) {
     if (message.author.bot) return
     console.log(`[MSG] ${message.guild?.name || 'DM'} | #${message.channel?.toString()} | ${message.author.tag}, ${message.author.id}: ${message.content}`)
+    pointedit(message.author.id, 1)
   }
 }
 
