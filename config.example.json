@@ -1,0 +1,5 @@
+{
+  "token": "봇의 토큰을 적어주세요!",
+  "guilds": null,
+  "DATABASE_URL": "연결 URI를 적어주세요 예시 : postgresql://<username>:<password>@<host>:<port>/<database>"
+}
