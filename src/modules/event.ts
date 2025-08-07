@@ -20,7 +20,6 @@ class EventModule extends Extension {
   @listener({ event: 'messageCreate' })
   async onMessage(message: Message) {
     if (message.author.bot) return
-    console.log(`[MSG] ${message.guild?.name || 'DM'} | #${message.channel?.toString()} | ${message.author.tag}, ${message.author.id}: ${message.content}`)
     pointedit(Number(message.author.id), 1)
   }
 }

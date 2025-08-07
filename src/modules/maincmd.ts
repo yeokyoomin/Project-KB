@@ -1,5 +1,5 @@
-import { Extension, applicationCommand } from '@pikokr/command.ts'
-import { EmbedBuilder, ApplicationCommandType, ChatInputCommandInteraction } from 'discord.js'
+import { Extension, applicationCommand, option } from '@pikokr/command.ts'
+import { User, EmbedBuilder, ApplicationCommandType, ChatInputCommandInteraction, ApplicationCommandOptionType } from 'discord.js'
 import * as mod from '../database/modules'
 //디스코드 명령어 임베드
 const UNKNOWN_USER = new EmbedBuilder()
@@ -12,15 +12,24 @@ class MainModule extends Extension {
         type: ApplicationCommandType.ChatInput,
         description: '현재 보유한 포인트를 확인해요!',
     })
-    async point(i: ChatInputCommandInteraction) {
+    async point(@option({
+        name: '유저',
+        description: '포인트를 확인할 유저를 선택해요',
+        type: ApplicationCommandOptionType.User,
+        required: false,
+    })
+    user: User,
+        i: ChatInputCommandInteraction
+    ) {
         if (!await mod.uidindb(Number(i.user.id))) {
             return i.reply({ embeds: [UNKNOWN_USER] })
         }
+        const targetUser = user ?? i.user;
         const LoadEmbed = new EmbedBuilder()
             .setTitle("잠시만 기다려 주세요!")
             .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
         await i.reply({ embeds: [LoadEmbed] })
-        const pointloader = await mod.userpoint(Number(i.user.id))
+        const pointloader = await mod.userpoint(Number(targetUser))
         const embed = new EmbedBuilder()
             .setDescription(`**${pointloader} Point**`)
             .setColor(0x3498db)
