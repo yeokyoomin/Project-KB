@@ -1,13 +1,14 @@
 /*디스코드 봇의 이벤트를 담당하는 파일이에요!*/
 import { Extension, listener } from '@pikokr/command.ts'
 import { Message } from 'discord.js'
-import { pointedit } from '../database/modules'
+import { pointedit, ConnectionCheck } from '../database/modules'
 class EventModule extends Extension {
   @listener({ event: 'ready' })
 
   async ready() {
     this.logger.info(`Logged in as ${this.client.user?.tag}`)
     await this.commandClient.fetchOwners()
+    this.logger.info(`${await ConnectionCheck()}`)
   }
 
   @listener({ event: 'applicationCommandInvokeError', emitter: 'cts' })
@@ -20,7 +21,7 @@ class EventModule extends Extension {
   async onMessage(message: Message) {
     if (message.author.bot) return
     console.log(`[MSG] ${message.guild?.name || 'DM'} | #${message.channel?.toString()} | ${message.author.tag}, ${message.author.id}: ${message.content}`)
-    pointedit(message.author.id, 1)
+    pointedit(Number(message.author.id), 1)
   }
 }
 

@@ -9,7 +9,7 @@ export const purchases = pgTable('purchases', {
 
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
-    user_id: text('user_id').notNull(),
+    username: text('username').notNull(),
     discriminator: text('discriminator').notNull(),
     points: integer('points').default(0)
 });
