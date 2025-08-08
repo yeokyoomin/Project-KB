@@ -29,11 +29,16 @@ class InfoModule extends Extension {
             type: ApplicationCommandOptionType.User,
             required: false,
         })
-        user: User,
+        user: User | null,
         i: ChatInputCommandInteraction
     ) {
-        const targetUser = user ? user : i.user
-
+        const targetUserId = user ?? i.user.id
+        let targetUser
+        try {
+            targetUser = await i.client.users.fetch(targetUserId)
+        } catch {
+            targetUser = i.user
+        }
         if (!(await mod.uidindb(targetUser.id))) {
             return i.reply({ embeds: [UNKNOWN_USER], ephemeral: true })
         }
@@ -41,6 +46,7 @@ class InfoModule extends Extension {
         const loadingEmbed = new EmbedBuilder()
             .setTitle("잠시만 기다려 주세요!")
             .setDescription("-# 서버에서 유저 정보를 불러오는 중이에요...")
+
         await i.reply({ embeds: [loadingEmbed] })
 
         const pointloader = (await mod.userpoint(targetUser.id)) ?? 0
@@ -74,7 +80,7 @@ class InfoModule extends Extension {
             .addOptions(allOptions)
 
         const newEmbed = new EmbedBuilder()
-            .setTitle(`${targetUser ? targetUser.username : i.user.username}님의 정보`)
+            .setTitle(`${targetUser.username}님의 정보`)
             .setDescription(`**포인트** : ${pointloader}포인트 \n **exp** : 데이터를 찾을 수 없어요.`)
 
         const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)
@@ -100,16 +106,22 @@ class InfoModule extends Extension {
 
         if (selectedValue === 'info') {
             const targetUser = await interaction.client.users.fetch(ownerId)
-            const pointloader = await mod.userpoint(ownerId) ?? 0
+            const pointloader = (await mod.userpoint(ownerId)) ?? 0
             const embed = new EmbedBuilder()
-                .setTitle(`${targetUser ? targetUser.username : interaction.user.username}님의 정보`)
+                .setTitle(`${targetUser.username}님의 정보`)
                 .setDescription(`**포인트** : ${pointloader}포인트 \n **exp** : 데이터를 찾을 수 없어요.`)
-            await interaction.update({ embeds: [embed] })
+            await interaction.update({
+                embeds: [embed],
+                components: interaction.message.components
+            })
         } else {
             const embed = new EmbedBuilder()
                 .setTitle(`${selectedValue}`)
-                .setDescription(`상세 정보를 불러올수 없어요..`)
-            await interaction.update({ embeds: [embed] })
+                .setDescription(`상세 정보를 불러올 수 없어요..`)
+            await interaction.update({
+                embeds: [embed],
+                components: interaction.message.components
+            })
         }
     }
 }
