@@ -20,7 +20,7 @@ class EventModule extends Extension {
   @listener({ event: 'messageCreate' })
   async onMessage(message: Message) {
     if (message.author.bot) return
-    pointedit(Number(message.author.id), 1)
+    pointedit(String(message.author.id), 1)
   }
 }
 

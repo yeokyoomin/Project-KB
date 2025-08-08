@@ -21,22 +21,22 @@ class MainModule extends Extension {
     user: User,
         i: ChatInputCommandInteraction
     ) {
-        if (!await mod.uidindb(Number(i.user.id))) {
+        let targetUser = user ?? i.user.id;
+        if (!await mod.uidindb(String(targetUser))) {
             return i.reply({ embeds: [UNKNOWN_USER] })
+        } else {
+            const LoadEmbed = new EmbedBuilder()
+                .setTitle("잠시만 기다려 주세요!")
+                .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
+            await i.reply({ embeds: [LoadEmbed] })
+            const pointloader = await mod.userpoint(String(targetUser))
+            const embed = new EmbedBuilder()
+                .setDescription(`**${pointloader} Point**`)
+                .setColor(0x3498db)
+            await i.editReply({ embeds: [embed] })
         }
-        const targetUser = user ?? i.user;
-        const LoadEmbed = new EmbedBuilder()
-            .setTitle("잠시만 기다려 주세요!")
-            .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
-        await i.reply({ embeds: [LoadEmbed] })
-        const pointloader = await mod.userpoint(Number(targetUser))
-        const embed = new EmbedBuilder()
-            .setDescription(`**${pointloader} Point**`)
-            .setColor(0x3498db)
-        await i.editReply({ embeds: [embed] })
     }
 }
-
 export const setup = async () => {
     return new MainModule()
 }
