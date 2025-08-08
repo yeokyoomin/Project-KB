@@ -55,15 +55,15 @@ export async function userpoint(uid: string): Promise<number | null> {
 }
 
 /* 유저 인벤토리 확인 함수 */
-export async function userinven(uid: string) {
+export async function userinven(uid: string): Promise<string[]> {
     try {
         const result = await db
             .select({ item_id: purchases.item_id })
             .from(purchases)
-            .where(eq(users.id, uid));
-        if (result.length === 0) return null;
-        return result;
+            .where(eq(purchases.user_id, uid));
+        return result.map(r => r.item_id);
     } catch (error) {
-        return null
+        console.error('유저 인벤토리 조회 중 오류가 발생했어요 :', error);
+        return [];
     }
 }

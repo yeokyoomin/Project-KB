@@ -1,64 +1,119 @@
-import { Extension, applicationCommand, option } from '@pikokr/command.ts'
-import { User, EmbedBuilder, ApplicationCommandType, ChatInputCommandInteraction, ApplicationCommandOptionType } from 'discord.js'
+import { Extension, applicationCommand, option, listener } from '@pikokr/command.ts'
+import {
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    User,
+    EmbedBuilder,
+    ApplicationCommandType,
+    ChatInputCommandInteraction,
+    ApplicationCommandOptionType,
+    ActionRowBuilder,
+    Interaction
+} from 'discord.js'
 import * as mod from '../database/modules'
-//디스코드 명령어 임베드
+
 const UNKNOWN_USER = new EmbedBuilder()
     .setTitle("오류")
     .setDescription("데이터베이스에서 유저 정보를 찾을 수 없어요.\n[웹사이트](https://dstat.life)에서 먼저 로그인을 진행해 주세요.")
 
-class MainModule extends Extension {
+class InfoModule extends Extension {
     @applicationCommand({
-        name: '포인트',
+        name: '정보',
         type: ApplicationCommandType.ChatInput,
-        description: '현재 보유한 포인트를 확인해요!',
+        description: '유저의 정보를 확인할 수 있어요!',
     })
-    async point(@option({
-        name: '유저',
-        description: '포인트를 확인할 유저를 선택해요',
-        type: ApplicationCommandOptionType.User,
-        required: false,
-    })
-    user: User,
+    async info(
+        @option({
+            name: '유저',
+            description: '정보를 확인할 유저를 선택해요',
+            type: ApplicationCommandOptionType.User,
+            required: false,
+        })
+        user: User,
         i: ChatInputCommandInteraction
     ) {
-        let targetUser = user ?? i.user.id;
-        if (!await mod.uidindb(String(targetUser))) {
-            return i.reply({ embeds: [UNKNOWN_USER] })
-        } else {
-            const LoadEmbed = new EmbedBuilder()
-                .setTitle("잠시만 기다려 주세요!")
-                .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
-            await i.reply({ embeds: [LoadEmbed] })
-            const pointloader = await mod.userpoint(String(targetUser))
-            const embed = new EmbedBuilder()
-                .setDescription(`**${pointloader} Point**`)
-                .setColor(0x3498db)
-            await i.editReply({ embeds: [embed] })
+        const targetUser = user ? user : i.user
+
+        if (!(await mod.uidindb(targetUser.id))) {
+            return i.reply({ embeds: [UNKNOWN_USER], ephemeral: true })
         }
+
+        const loadingEmbed = new EmbedBuilder()
+            .setTitle("잠시만 기다려 주세요!")
+            .setDescription("-# 서버에서 유저 정보를 불러오는 중이에요...")
+        await i.reply({ embeds: [loadingEmbed] })
+
+        const pointloader = (await mod.userpoint(targetUser.id)) ?? 0
+        const invenloader = await mod.userinven(targetUser.id)
+
+        if (!invenloader || invenloader.length === 0) {
+            return i.editReply({
+                content: '보유한 아이템이 없어요!',
+                embeds: [],
+                components: []
+            })
+        }
+
+        const homeOption = new StringSelectMenuOptionBuilder()
+            .setLabel('정보')
+            .setDescription(`보유 포인트 : ${pointloader} | 보유 exp : 데이터를 찾을 수 없어요.`)
+            .setValue('info')
+
+        const itemOptions = invenloader.map(itemId =>
+            new StringSelectMenuOptionBuilder()
+                .setLabel(`${itemId}`)
+                .setDescription(`그냥 설명이에요...`)
+                .setValue(String(itemId))
+        )
+
+        const allOptions = [homeOption, ...itemOptions]
+
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId(`starter_${i.user.id}`)
+            .setPlaceholder('이곳을 클릭하여 메뉴를 선택하세요')
+            .addOptions(allOptions)
+
+        const newEmbed = new EmbedBuilder()
+            .setTitle(`${targetUser ? targetUser.username : i.user.username}님의 정보`)
+            .setDescription(`**포인트** : ${pointloader}포인트 \n **exp** : 데이터를 찾을 수 없어요.`)
+
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)
+
+        return i.editReply({ embeds: [newEmbed], components: [row] })
     }
-    @applicationCommand({
-        name: '인벤토리',
-        type: ApplicationCommandType.ChatInput,
-        description: '인벤토리를 확인해요',
-    })
-    async inventory(i: ChatInputCommandInteraction) {
-        if (!await mod.uidindb(String(i.user.id))) {
-            return i.reply({ embeds: [UNKNOWN_USER] })
-        } else {
-            const LoadEmbed = new EmbedBuilder()
-                .setTitle("잠시만 기다려 주세요!")
-                .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
-            await i.reply({ embeds: [LoadEmbed] })
-            const invenloader = await mod.userinven(String(i.user.id))
-            console.log(invenloader)
+
+    @listener({ event: 'interactionCreate' })
+    async onInteraction(interaction: Interaction) {
+        if (!interaction.isStringSelectMenu()) return
+        if (!interaction.customId.startsWith('starter_')) return
+
+        const ownerId = interaction.customId.split('_')[1]
+
+        if (interaction.user.id !== ownerId) {
+            return interaction.reply({
+                content: '이 메뉴는 당신을 위한 메뉴가 아닙니다.',
+                ephemeral: true,
+            })
+        }
+
+        const selectedValue = interaction.values[0]
+
+        if (selectedValue === 'info') {
+            const targetUser = await interaction.client.users.fetch(ownerId)
+            const pointloader = await mod.userpoint(ownerId) ?? 0
             const embed = new EmbedBuilder()
-                .setDescription(`${invenloader}`)
-                .setColor(0x3498db)
-            await i.editReply({ embeds: [embed] })
+                .setTitle(`${targetUser ? targetUser.username : interaction.user.username}님의 정보`)
+                .setDescription(`**포인트** : ${pointloader}포인트 \n **exp** : 데이터를 찾을 수 없어요.`)
+            await interaction.update({ embeds: [embed] })
+        } else {
+            const embed = new EmbedBuilder()
+                .setTitle(`${selectedValue}`)
+                .setDescription(`상세 정보를 불러올수 없어요..`)
+            await interaction.update({ embeds: [embed] })
         }
     }
 }
 
 export const setup = async () => {
-    return new MainModule()
+    return new InfoModule()
 }
