@@ -40,7 +40,7 @@ class InfoModule extends Extension {
             targetUser = i.user
         }
         if (!(await mod.uidindb(targetUser.id))) {
-            return i.reply({ embeds: [UNKNOWN_USER], ephemeral: true })
+            return i.reply({ embeds: [UNKNOWN_USER] })
         }
 
         const loadingEmbed = new EmbedBuilder()
