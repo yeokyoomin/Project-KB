@@ -11,5 +11,6 @@ export const users = pgTable('users', {
     id: text('id').primaryKey(),
     username: text('username').notNull(),
     discriminator: text('discriminator').notNull(),
-    points: integer('points').default(0)
+    points: integer('points').default(0),
+    exp: integer('exp').default(0)
 });

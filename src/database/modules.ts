@@ -53,3 +53,17 @@ export async function userpoint(uid: string): Promise<number | null> {
         return null
     }
 }
+
+/* 유저 인벤토리 확인 함수 */
+export async function userinven(uid: string) {
+    try {
+        const result = await db
+            .select({ item_id: purchases.item_id })
+            .from(purchases)
+            .where(eq(users.id, uid));
+        if (result.length === 0) return null;
+        return result;
+    } catch (error) {
+        return null
+    }
+}

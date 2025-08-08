@@ -36,7 +36,29 @@ class MainModule extends Extension {
             await i.editReply({ embeds: [embed] })
         }
     }
+    @applicationCommand({
+        name: '인벤토리',
+        type: ApplicationCommandType.ChatInput,
+        description: '인벤토리를 확인해요',
+    })
+    async inventory(i: ChatInputCommandInteraction) {
+        if (!await mod.uidindb(String(i.user.id))) {
+            return i.reply({ embeds: [UNKNOWN_USER] })
+        } else {
+            const LoadEmbed = new EmbedBuilder()
+                .setTitle("잠시만 기다려 주세요!")
+                .setDescription("-# 서버에서 포인트 정보를 불러오는 중이에요...")
+            await i.reply({ embeds: [LoadEmbed] })
+            const invenloader = await mod.userinven(String(i.user.id))
+            console.log(invenloader)
+            const embed = new EmbedBuilder()
+                .setDescription(`${invenloader}`)
+                .setColor(0x3498db)
+            await i.editReply({ embeds: [embed] })
+        }
+    }
 }
+
 export const setup = async () => {
     return new MainModule()
 }
